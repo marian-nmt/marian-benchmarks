@@ -8,6 +8,10 @@
 *.stdout
 *.tgz
 
+*.time
+*.wps
+*.bleu
+
 tools/amun
 tools/marian
 tools/marian-dev

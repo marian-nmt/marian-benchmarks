@@ -1,0 +1,15 @@
+beam-size: 6
+cpu-threads: 16
+gpu-threads: 0
+no-debpe: true
+normalize: true
+relative-paths: true
+scorers:
+  F0:
+    path: en-de/model.l2r.ens1.npz
+    type: nematus2
+weights:
+  F0: 1
+source-vocab:
+  - en-de/vocab.en.json
+target-vocab: en-de/vocab.de.json
