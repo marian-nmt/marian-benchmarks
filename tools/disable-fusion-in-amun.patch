@@ -1,0 +1,13 @@
+diff --git a/src/amun/common/god.cpp b/src/amun/common/god.cpp
+index d156dab..4ef98f4 100644
+--- a/src/amun/common/god.cpp
++++ b/src/amun/common/god.cpp
+@@ -92,7 +92,7 @@ God& God::Init(int argc, char** argv) {
+   LoadFiltering();
+ 
+   returnNBestList_ = Get<bool>("n-best");
+-  useFusedSoftmax_ = true;
++  useFusedSoftmax_ = false;
+   if (gpuLoaders_.size() != 1 || // more than 1 scorer
+       God::Get<size_t>("beam-size") > 11 // beam size affect shared mem alloc in gLogSoftMax()
+       ) {
