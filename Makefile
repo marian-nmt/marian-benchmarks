@@ -10,13 +10,13 @@ GIT_SACRE_BLEU=https://github.com/mjpost/sacreBLEU -b master
 MARIANDIR=tools/marian-dev
 BRANCH=master
 
-.PHONY: marian amun install tools models tools/marian tools/amun
+.PHONY: install models test tools tools/marian tools/amun marian amun
 .SECONDARY:
 
 
 #####################################################################
 
-install: tools tools/marian tools/amun models
+install: tools tools/marian tools/amun models test
 
 tools:
 	git -C $@/moses-scripts pull || git clone $(GIT_MOSES_SCRIPTS) $@/moses-scripts
@@ -43,3 +43,8 @@ models:
 	mkdir -p $@
 	cd $@ && bash ./download-wmt16.sh
 	cd $@ && bash ./download-wmt17.sh
+
+test:
+	tools/marian/build/marian -h 2>/dev/null || echo "Failure"
+	tools/amun/build/amun -h 2>/dev/null || echo "Failure"
+	tools/amun/build-nofus/amun -h 2>/dev/null || echo "Failure"
