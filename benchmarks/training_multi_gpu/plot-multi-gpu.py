@@ -2,6 +2,7 @@
 Bar chart demo with pairs of bars grouped for easy comparison.
 """
 import matplotlib as mpl
+mpl.use('Agg')
 import matplotlib.pyplot as plt
 import numpy as np
 import argparse
