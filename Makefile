@@ -7,36 +7,39 @@ GIT_SUBWORD_NMT=http://github.com/rsennrich/subword-nmt.git
 GIT_NEMATUS=http://github.com/EdinburghNLP/nematus.git
 GIT_SACRE_BLEU=https://github.com/mjpost/sacreBLEU -b master
 
-MARIANDIR=tools/marian-dev
-BRANCH=master
+MARIAN_FLAGS=-DCUDA_TOOLKIT_ROOT_DIR=/usr/local/cuda-9.0
+MARIAN_BRANCH=master
 
-.PHONY: install models test tools tools/marian tools/amun marian amun
+.PHONY: install models test tools tools/marian tools/amun tools/nematus marian amun
 .SECONDARY:
 
 
 #####################################################################
 
-install: tools tools/marian tools/amun models test
+install: tools models test
 
-tools:
+tools: tools/nematus tools/marian tools/amun
 	git -C $@/moses-scripts pull || git clone $(GIT_MOSES_SCRIPTS) $@/moses-scripts
 	git -C $@/subword-nmt pull || git clone $(GIT_SUBWORD_NMT) $@/subword-nmt
-	git -C $@/nematus pull || git clone $(GIT_NEMATUS) $@/nematus
-	cd $@/nematus && git apply ../add-timer-to-nematus.patch || true
 	git -C $@/sacreBLEU pull || git clone $(GIT_SACRE_BLEU) $@/sacreBLEU
+
+tools/nematus:
+	test -d $@ && cd $@ && git stash
+	git -C $@ pull || git clone $(GIT_NEMATUS) $@
+	cd $@ && git apply ../add-timer-to-nematus.patch || true
 
 marian: tools/marian
 tools/marian:
-	git -C $@ pull || git clone $(GIT_MARIAN) -b $(BRANCH) $@
-	mkdir -p $@/build && cd $@/build && cmake .. -DCMAKE_BUILD_TYPE=Release && make -j$(THREADS)
+	git -C $@ pull || git clone $(GIT_MARIAN) -b $(MARIAN_BRANCH) $@
+	mkdir -p $@/build && cd $@/build && cmake .. -DCMAKE_BUILD_TYPE=Release $(MARIAN_FLAGS) && make -j$(THREADS)
 
 amun: tools/amun
 tools/amun:
 	git -C $@ pull || git clone $(GIT_AMUN) $@
-	mkdir -p $@/build && cd $@/build && cmake .. -DCMAKE_BUILD_TYPE=Release && make -j$(THREADS)
+	mkdir -p $@/build && cd $@/build && cmake .. -DCMAKE_BUILD_TYPE=Release $(MARIAN_FLAGS) && make -j$(THREADS)
 	# disable top-k/softmax fusion
 	cd $@ && git apply ../disable-fusion-in-amun.patch || true
-	mkdir -p $@/build-nofus && cd $@/build-nofus && cmake .. -DCMAKE_BUILD_TYPE=Release && make -j$(THREADS)
+	mkdir -p $@/build-nofus && cd $@/build-nofus && cmake .. -DCMAKE_BUILD_TYPE=Release $(MARIAN_FLAGS) && make -j$(THREADS)
 	cd $@ && git checkout -- src/amun/common/god.cpp
 
 models:
