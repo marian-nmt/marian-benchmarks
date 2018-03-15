@@ -1,6 +1,7 @@
 THREADS=16
 
 GIT_MARIAN=http://github.com/marian-nmt/marian-dev.git
+GIT_MARIAN_EXAMPLES=http://github.com/marian-nmt/marian-examples.git
 GIT_AMUN=http://github.com/marian-nmt/marian.git
 GIT_MOSES_SCRIPTS=http://github.com/marian-nmt/moses-scripts.git
 GIT_SUBWORD_NMT=http://github.com/rsennrich/subword-nmt.git
@@ -10,13 +11,13 @@ GIT_SACRE_BLEU=https://github.com/mjpost/sacreBLEU -b master
 MARIAN_FLAGS=-DCUDA_TOOLKIT_ROOT_DIR=/usr/local/cuda-9.0
 MARIAN_BRANCH=master
 
-.PHONY: install models test tools tools/marian tools/amun tools/nematus marian amun
+.PHONY: install models test tools tools/marian tools/amun tools/nematus marian amun marian-examples
 .SECONDARY:
 
 
 #####################################################################
 
-install: tools models test
+install: tools models marian-examples test
 
 tools: tools/nematus tools/marian tools/amun
 	git -C $@/moses-scripts pull || git clone $(GIT_MOSES_SCRIPTS) $@/moses-scripts
@@ -41,6 +42,9 @@ tools/amun:
 	cd $@ && git apply ../disable-fusion-in-amun.patch || true
 	mkdir -p $@/build-nofus && cd $@/build-nofus && cmake .. -DCMAKE_BUILD_TYPE=Release $(MARIAN_FLAGS) && make -j$(THREADS)
 	cd $@ && git checkout -- src/amun/common/god.cpp
+
+marian-examples:
+	git -C $@ pull || git clone $(GIT_MARIAN_EXAMPLES)
 
 models:
 	mkdir -p $@
