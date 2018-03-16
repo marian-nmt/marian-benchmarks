@@ -7,11 +7,12 @@ GIT_MOSES_SCRIPTS=http://github.com/marian-nmt/moses-scripts.git
 GIT_SUBWORD_NMT=http://github.com/rsennrich/subword-nmt.git
 GIT_NEMATUS=http://github.com/EdinburghNLP/nematus.git
 GIT_SACRE_BLEU=https://github.com/mjpost/sacreBLEU -b master
+GIT_SOCKEYE=https://github.com/awslabs/sockeye
 
 MARIAN_FLAGS=-DCUDA_TOOLKIT_ROOT_DIR=/usr/local/cuda-9.0
 MARIAN_BRANCH=master
 
-.PHONY: install models test tools tools/marian tools/amun tools/nematus marian amun marian-examples
+.PHONY: install models test tools tools/marian tools/amun tools/nematus tools/sockeye marian amun marian-examples
 .SECONDARY:
 
 
@@ -19,16 +20,23 @@ MARIAN_BRANCH=master
 
 install: tools models marian-examples test
 
-tools: tools/nematus tools/marian tools/amun
+tools: tools/nematus tools/marian tools/amun tools/sockeye
 	git -C $@/moses-scripts pull || git clone $(GIT_MOSES_SCRIPTS) $@/moses-scripts
 	git -C $@/subword-nmt pull || git clone $(GIT_SUBWORD_NMT) $@/subword-nmt
 	git -C $@/sacreBLEU pull || git clone $(GIT_SACRE_BLEU) $@/sacreBLEU
 
+# Other frameworks
 tools/nematus:
 	test -d $@ && cd $@ && git stash
 	git -C $@ pull || git clone $(GIT_NEMATUS) $@
 	cd $@ && git apply ../add-timer-to-nematus.patch || true
 
+tools/sockeye:
+	git -C $@ pull || git clone $(GIT_SOCKEYE) $@
+	cd $@ && pip3 install -r requirements.gpu-cu90.txt --user
+	cd $@ && pip3 install . --user
+
+# Marian
 marian: tools/marian
 tools/marian:
 	git -C $@ pull || git clone $(GIT_MARIAN) -b $(MARIAN_BRANCH) $@
@@ -43,8 +51,10 @@ tools/amun:
 	mkdir -p $@/build-nofus && cd $@/build-nofus && cmake .. -DCMAKE_BUILD_TYPE=Release $(MARIAN_FLAGS) && make -j$(THREADS)
 	cd $@ && git checkout -- src/amun/common/god.cpp
 
+# Marian examples for preprocessed data
 marian-examples:
 	git -C $@ pull || git clone $(GIT_MARIAN_EXAMPLES)
+
 
 models:
 	mkdir -p $@
