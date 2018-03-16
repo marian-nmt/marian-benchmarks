@@ -12,7 +12,7 @@ GIT_SOCKEYE=https://github.com/awslabs/sockeye
 MARIAN_FLAGS=-DCUDA_TOOLKIT_ROOT_DIR=/usr/local/cuda-9.0
 MARIAN_BRANCH=master
 
-.PHONY: install models test tools tools/marian tools/amun tools/nematus tools/sockeye marian amun marian-examples
+.PHONY: install models test tools tools/marian tools/amun tools/nematus tools/sockeye marian-examples
 .SECONDARY:
 
 
@@ -20,23 +20,34 @@ MARIAN_BRANCH=master
 
 install: tools models marian-examples test
 
-tools: tools/nematus tools/marian tools/amun tools/sockeye
+tools: scripts nematus sockeye amun marian
+
+requirements: requirements-wmt requirements-multigpu requirements-rnn requirements-transformer
+requirements-wmt: scripts models amun marian nematus
+requirements-multigpu: marian examples
+requirements-rnn: marian nematus examples
+requirements-transformer: marian examples
+
+
+#####################################################################
+
+scripts:
 	git -C $@/moses-scripts pull || git clone $(GIT_MOSES_SCRIPTS) $@/moses-scripts
 	git -C $@/subword-nmt pull || git clone $(GIT_SUBWORD_NMT) $@/subword-nmt
 	git -C $@/sacreBLEU pull || git clone $(GIT_SACRE_BLEU) $@/sacreBLEU
 
-# Other frameworks
+nematus: tools/nematus
 tools/nematus:
 	test -d $@ && cd $@ && git stash
 	git -C $@ pull || git clone $(GIT_NEMATUS) $@
 	cd $@ && git apply ../add-timer-to-nematus.patch || true
 
+sockeye: tools/sockeye
 tools/sockeye:
 	git -C $@ pull || git clone $(GIT_SOCKEYE) $@
 	cd $@ && pip3 install -r requirements.gpu-cu90.txt --user
 	cd $@ && pip3 install . --user
 
-# Marian
 marian: tools/marian
 tools/marian:
 	git -C $@ pull || git clone $(GIT_MARIAN) -b $(MARIAN_BRANCH) $@
@@ -51,7 +62,7 @@ tools/amun:
 	mkdir -p $@/build-nofus && cd $@/build-nofus && cmake .. -DCMAKE_BUILD_TYPE=Release $(MARIAN_FLAGS) && make -j$(THREADS)
 	cd $@ && git checkout -- src/amun/common/god.cpp
 
-# Marian examples for preprocessed data
+examples: marian-examples
 marian-examples:
 	git -C $@ pull || git clone $(GIT_MARIAN_EXAMPLES)
 	cd $@/tools && make
@@ -60,6 +71,8 @@ marian-examples:
 	test -e $@/transformer/data/corpus.bpe.en || (cd $@/transformer && ./scripts/download-files.sh && ./scripts/preprocess-data.sh)
 	test -e $@/transformer/data/corpus.bpe.en || (cd $@/transformer && ./scripts/preprocess-data.sh)
 
+
+#####################################################################
 
 models:
 	mkdir -p $@
