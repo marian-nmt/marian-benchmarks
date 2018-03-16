@@ -54,6 +54,11 @@ tools/amun:
 # Marian examples for preprocessed data
 marian-examples:
 	git -C $@ pull || git clone $(GIT_MARIAN_EXAMPLES)
+	cd $@/tools && make
+	test -e $@/training-basics/data/corpus.bpe.en || (cd $@/training-basics && ./scripts/download-files.sh && ./scripts/preprocess-data.sh)
+	test -e $@/training-basics/data/corpus.bpe.en || (cd $@/training-basics)
+	test -e $@/transformer/data/corpus.bpe.en || (cd $@/transformer && ./scripts/download-files.sh && ./scripts/preprocess-data.sh)
+	test -e $@/transformer/data/corpus.bpe.en || (cd $@/transformer && ./scripts/preprocess-data.sh)
 
 
 models:
