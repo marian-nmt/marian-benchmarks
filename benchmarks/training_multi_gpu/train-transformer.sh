@@ -9,7 +9,7 @@ MODEL=$1
 GPUS=$(seq 0 $2)
 ARGS=$3
 
-echo "Using GPUs $GPUS"
+echo "Using GPUs $GPUS" 1>&2
 
 test -e $MODEL/model.npz && exit
 mkdir -p $MODEL
