@@ -1,6 +1,7 @@
 ROOT 	:= $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
-TOOLS 	:= $(realpath $(ROOT)/../../tools)
-MODEL	:= $(realpath $(ROOT)/../../models/wmt16_systems/en-de)
+TOOLS 	:= $(realpath $(ROOT)/../tools)
+SCRIPTS	:= $(realpath $(ROOT)/../../../tools)
+MODEL	:= $(realpath $(ROOT)/../models/wmt16_systems/en-de)
 
 DEVICE	= 0
 
@@ -21,7 +22,9 @@ wps: $(OUTPUT_WPS)
 bleu: $(OUTPUT_BLEU)
 	tail *.out.bleu
 
+
 #####################################################################
+
 # collect outputs
 %.out.time: %.out.log
 	python $(TOOLS)/extract_time.py -t $* -i $< > $@
@@ -32,16 +35,17 @@ bleu: $(OUTPUT_BLEU)
 %.out.bleu: %.out
 	cat $< \
 		| sed 's/\@\@ //g' \
-		| $(TOOLS)/moses-scripts/scripts/recaser/detruecase.perl \
-		| $(TOOLS)/moses-scripts/scripts/tokenizer/detokenizer.perl -l en \
-		| $(TOOLS)/sacreBLEU/sacrebleu.py -t wmt16 -l en-de > $@
+		| $(SCRIPTS)/moses-scripts/scripts/recaser/detruecase.perl \
+		| $(SCRIPTS)/moses-scripts/scripts/tokenizer/detokenizer.perl -l en \
+		| $(SCRIPTS)/sacreBLEU/sacrebleu.py -t wmt16 -l en-de > $@
 
 
 #####################################################################
+
 # run nematus
 nematus.out: wmt16.en.prep
 	cd $(MODEL) && CUDA_VISIBLE_DEVICES=$(DEVICE) THEANO_FLAGS=mode=FAST_RUN,floatX=float32,device=cuda,on_unused_input=warn \
-		python $(TOOLS)/nematus/nematus/translate.py -m model.npz --suppress-unk -v \
+		python $(TOOLS)/nematus/nematus/translate.py -m model.npz -v \
 		-k 5 -n -p 5 \
 		< $(ROOT)/$< > $(ROOT)/$@ 2> $(ROOT)/$@.log
 
@@ -86,19 +90,20 @@ amun.nofus.batch%.out: wmt16.en.prep
 
 
 #####################################################################
+
 # prepare input file
 wmt16.en.prep: wmt16.en
 	cat $< \
-		| $(TOOLS)/moses-scripts/scripts/tokenizer/normalize-punctuation.perl -l en \
-		| $(TOOLS)/moses-scripts/scripts/tokenizer/tokenizer.perl -l en -penn -q \
-		| $(TOOLS)/moses-scripts/scripts/recaser/truecase.perl -model $(MODEL)/truecase-model.en \
-		| $(TOOLS)/subword-nmt/apply_bpe.py -c $(MODEL)/ende.bpe \
+		| $(SCRIPTS)/moses-scripts/scripts/tokenizer/normalize-punctuation.perl -l en \
+		| $(SCRIPTS)/moses-scripts/scripts/tokenizer/tokenizer.perl -l en -penn -q \
+		| $(SCRIPTS)/moses-scripts/scripts/recaser/truecase.perl -model $(MODEL)/truecase-model.en \
+		| $(SCRIPTS)/subword-nmt/subword_nmt/apply_bpe.py -c $(MODEL)/ende.bpe \
 		> $@
 wmt16.en:
-	$(TOOLS)/sacreBLEU/sacrebleu.py -t wmt16 -l en-de --echo src > $@
+	$(SCRIPTS)/sacreBLEU/sacrebleu.py -t wmt16 -l en-de --echo src > $@
 
 
 #####################################################################
-# clean
+
 clean:
 	rm -f wmt16.* *.out *.log *.time *.wps *.bleu

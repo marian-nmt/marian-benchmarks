@@ -1,0 +1,30 @@
+diff --git a/nematus/translate.py b/nematus/translate.py
+index e5c3853..af540d5 100755
+--- a/nematus/translate.py
++++ b/nematus/translate.py
+@@ -25,6 +25,8 @@ from nmt import create_model, load_dictionaries, read_all_lines
+ import inference
+ import exception
+ 
++from timeit import default_timer as timer
++
+ class Translation(object):
+     """
+     Models a translated segment.
+@@ -224,6 +226,8 @@ class Translator(object):
+ 
+         for idx in xrange(num_samples):
+             yield self._retrieved_translations[request_id][idx]
++            if idx == 0:
++                logging.info("Time start for process {}: {}".format(request_id, timer()))
+ 
+         # then remove all entries with this request ID from the dictionary
+         del self._retrieved_translations[request_id]
+@@ -278,6 +282,7 @@ class Translator(object):
+         duration = time.time() - start_time
+         logging.info('Translated {} sents in {} sec. Speed {} sents/sec'.format(n_sent, duration, n_sent/duration))
+ 
++        logging.info('Time end for all processes: {}'.format(timer()))
+         return translations
+ 
+     def translate_file(self, input_object, translation_settings):
