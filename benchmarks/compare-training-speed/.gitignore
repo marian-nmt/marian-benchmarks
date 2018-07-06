@@ -6,3 +6,6 @@ tools/sockeye
 data/*.de
 data/*.en
 data/*.yml
+
+*/.nfs*
+*/model.*

@@ -5,10 +5,11 @@ GIT_AMUN=http://github.com/marian-nmt/marian.git
 GIT_NEMATUS=http://github.com/EdinburghNLP/nematus.git
 GIT_SOCKEYE=https://github.com/awslabs/sockeye
 
-MARIAN_FLAGS=-DCUDA_TOOLKIT_ROOT_DIR=/usr/local/cuda-9.2
+CUDA_DIR=/usr/local/cuda-9.1
+MARIAN_FLAGS=-DCUDA_TOOLKIT_ROOT_DIR=$(CUDA_DIR)
 MARIAN_BRANCH=master
 
-TOOLS = tools/marian tools/amun tools/nematus tools/sockeye
+TOOLS = tools/marian tools/amun tools/nematus tools/sockeye tools/fairseq
 
 .PHONY: clean data install test tools $(TOOLS)
 .SECONDARY:
@@ -38,9 +39,14 @@ tools/nematus:
 install-sockeye: tools/sockeye
 tools/sockeye:
 	git -C $@ pull || git clone $(GIT_SOCKEYE) $@
-	cd $@ && pip3 install -r requirements/requirements.gpu-cu91.txt --user
+	cd $@ && LD_LIBRARY_PATH=$$LD_LIBRARY_PATH:$(CUDA_DIR) pip3 install -r requirements/requirements.gpu-cu91.txt --user
 	cd $@ && pip3 install . --user
 
+install-fairseq: tools/fairseq
+tools/fairseq:
+	pip3 install http://download.pytorch.org/whl/cu91/torch-0.4.0-cp35-cp35m-linux_x86_64.whl --user
+	#pip3 install torchvision --user
+	mkdir -p $@
 
 #####################################################################
 
