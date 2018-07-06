@@ -45,11 +45,13 @@ tools/sockeye:
 
 install-fairseq: tools/fairseq
 tools/fairseq:
-	LD_LIBRARY_PATH=$$LD_LIBRARY_PATH:$(CUDA_DIR) pip3 install http://download.pytorch.org/whl/cu91/torch-0.4.0-cp35-cp35m-linux_x86_64.whl --user
+	command -v python3.6 || echo "Please install python3.6 ..."
+	python3.6 -m pip install --upgrade pip
+	LD_LIBRARY_PATH=$$LD_LIBRARY_PATH:$(CUDA_DIR) python3.6 -m pip install http://download.pytorch.org/whl/cu91/torch-0.4.0-cp36-cp36m-linux_x86_64.whl --user
 	git -C $@ pull || git clone $(GIT_FAIRSEQ) $@
-	cd $@ && LD_LIBRARY_PATH=$$LD_LIBRARY_PATH:$(CUDA_DIR) pip3 install -r requirements.txt --user
-	cd $@ && python3 setup.py build
-	cd $@ && python3 setup.py develop --user
+	cd $@ && LD_LIBRARY_PATH=$$LD_LIBRARY_PATH:$(CUDA_DIR) python3.6 -m pip install -r requirements.txt --user
+	cd $@ && python3.6 setup.py build
+	cd $@ && python3.6 setup.py develop --user
 
 #####################################################################
 
