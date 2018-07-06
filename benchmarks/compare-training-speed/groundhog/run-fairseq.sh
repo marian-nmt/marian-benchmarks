@@ -28,3 +28,5 @@ CUDA_VISIBLE_DEVICES=0 python3.6 $TOOLS/fairseq/train.py \
     --log-interval 100 --max-update 1100 --seed 1111 \
     --device-id $GPUS \
     > fairseq.log 2>&1
+
+bash $TOOLS/extract-wps-fairseq.sh < fairseq.log > fairseq.wps

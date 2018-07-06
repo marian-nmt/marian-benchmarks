@@ -27,3 +27,5 @@ python3 -m sockeye.train \
     --max-updates 1100 --seed 1111 \
     --device-ids $GPUS \
     > sockeye.log 2>&1
+
+bash $TOOLS/extract-wps-sockeye.sh < sockeye.log > sockeye.wps
