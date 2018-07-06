@@ -10,7 +10,7 @@ CUDA_DIR=/usr/local/cuda-9.1
 MARIAN_FLAGS=-DCUDA_TOOLKIT_ROOT_DIR=$(CUDA_DIR)
 MARIAN_BRANCH=master
 
-TOOLS = tools/marian tools/amun tools/nematus tools/sockeye tools/fairseq
+TOOLS = tools/marian tools/nematus tools/sockeye tools/fairseq
 
 .PHONY: clean data install test tools $(TOOLS)
 .SECONDARY:
@@ -26,11 +26,6 @@ tools: $(TOOLS)
 install-marian: tools/marian
 tools/marian:
 	git -C $@ pull || git clone $(GIT_MARIAN) -b $(MARIAN_BRANCH) $@
-	mkdir -p $@/build && cd $@/build && cmake .. -DCMAKE_BUILD_TYPE=Release $(MARIAN_FLAGS) && make -j$(THREADS)
-
-install-amun: tools/amun
-tools/amun:
-	git -C $@ pull || git clone $(GIT_AMUN) $@
 	mkdir -p $@/build && cd $@/build && cmake .. -DCMAKE_BUILD_TYPE=Release $(MARIAN_FLAGS) && make -j$(THREADS)
 
 install-nematus: tools/nematus
@@ -64,7 +59,6 @@ data:
 
 test:
 	tools/marian/build/marian -h 2>/dev/null || echo "Failure"
-	tools/amun/build/amun -h 2>/dev/null || echo "Failure"
 	tools/nematus/nematus/nmt.py -h >/dev/null || echo "Failure"
 	python3 -m sockeye.train -h >/dev/null || echo "Failure"
 	python3 tools/fairseq/train.py -h >/dev/null || echo "Failure"
