@@ -1,0 +1,8 @@
+tools/marian
+tools/amun
+tools/nematus
+tools/sockeye
+
+data/*.de
+data/*.en
+data/*.yml
