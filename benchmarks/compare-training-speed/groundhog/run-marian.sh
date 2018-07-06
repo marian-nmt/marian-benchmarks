@@ -21,3 +21,4 @@ $TOOLS/marian/build/marian \
     --devices $GPUS \
     > marian.log 2>&1
 
+bash $TOOLS/extract-wps-marian.sh < marian.log > marian.wps
