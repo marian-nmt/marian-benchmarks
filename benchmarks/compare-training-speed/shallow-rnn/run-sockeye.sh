@@ -17,13 +17,13 @@ test -f $MODEL/train-data/data.info || python3 -m sockeye.prepare_data \
 
 
 python3 -m sockeye.train \
-    --device-ids $GPUS \
+    --prepared-data $MODEL/train-data \
     --output $MODEL \
     --encoder rnn --decoder rnn \
     --num-embed 512 --rnn-num-hidden 1024 --rnn-attention-type dot \
-    --prepared-data $MODEL/train-data \
     --validation-source $DATA/valid.bpe.en --validation-target $DATA/valid.bpe.de \
     --max-seq-len 50 \
     --batch-size 256 \
     --max-updates 1100 --seed 1111 \
+    --device-ids $GPUS \
     > sockeye.log 2>&1
