@@ -10,18 +10,33 @@ CUDA_DIR=/usr/local/cuda-9.1
 MARIAN_FLAGS=-DCUDA_TOOLKIT_ROOT_DIR=$(CUDA_DIR)
 MARIAN_BRANCH=master
 
-TOOLS = tools/marian tools/nematus tools/sockeye tools/fairseq
 
 .PHONY: clean data install test tools $(TOOLS)
 .SECONDARY:
 
+
+TOOLS = marian nematus sockeye fairseq
+EXPERIMENTS = groundhog
 
 install: tools
 
 
 #####################################################################
 
-tools: $(TOOLS)
+run: $(patsubst %,run-%,$(EXPERIMENTS))
+
+run-groundhog: groundhog/results.wps
+groundhog/results.wps:
+	cd groundhog && bash -x run-marian.sh
+	cd groundhog && bash -x run-sockeye.sh
+	cd groundhog && bash -x run-fairseq.sh
+	tail groundhog/*.wps > $@
+
+
+
+#####################################################################
+
+tools: $(patsubst %,install-%,$(TOOLS))
 
 install-marian: tools/marian
 tools/marian:
@@ -47,6 +62,7 @@ tools/fairseq:
 	cd $@ && LD_LIBRARY_PATH=$$LD_LIBRARY_PATH:$(CUDA_DIR) python3.6 -m pip install -r requirements.txt --user
 	cd $@ && python3.6 setup.py build
 	cd $@ && python3.6 setup.py develop --user
+
 
 #####################################################################
 
