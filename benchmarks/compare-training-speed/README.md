@@ -1,5 +1,9 @@
 ## Comparing training speed from different toolkits
 
+Experiments:
+- `groundhog`: shallow RNN model with attention mechanism
+- `transformer`: Transformer Base
+
 
 ### Usage
 
