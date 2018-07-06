@@ -16,7 +16,7 @@ MARIAN_BRANCH=master
 
 
 TOOLS = marian nematus sockeye fairseq
-EXPERIMENTS = groundhog
+EXPERIMENTS = groundhog transformer
 
 install: tools
 
@@ -32,6 +32,12 @@ groundhog/results.wps:
 	cd groundhog && bash -x run-fairseq.sh
 	tail groundhog/*.wps > $@
 
+run-transformer: transformer/results.wps
+transformer/results.wps:
+	cd transformer && bash -x run-marian.sh
+	cd transformer && bash -x run-sockeye.sh
+	cd transformer && bash -x run-fairseq.sh
+	tail transformer/*.wps > $@
 
 
 #####################################################################
