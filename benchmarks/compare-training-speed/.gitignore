@@ -2,6 +2,7 @@ tools/marian
 tools/amun
 tools/nematus
 tools/sockeye
+tools/fairseq
 
 data/*.de
 data/*.en

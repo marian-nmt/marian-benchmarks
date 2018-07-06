@@ -4,6 +4,7 @@ GIT_MARIAN=http://github.com/marian-nmt/marian-dev.git
 GIT_AMUN=http://github.com/marian-nmt/marian.git
 GIT_NEMATUS=http://github.com/EdinburghNLP/nematus.git
 GIT_SOCKEYE=https://github.com/awslabs/sockeye
+GIT_FAIRSEQ=https://github.com/pytorch/fairseq
 
 CUDA_DIR=/usr/local/cuda-9.1
 MARIAN_FLAGS=-DCUDA_TOOLKIT_ROOT_DIR=$(CUDA_DIR)
@@ -44,9 +45,11 @@ tools/sockeye:
 
 install-fairseq: tools/fairseq
 tools/fairseq:
-	pip3 install http://download.pytorch.org/whl/cu91/torch-0.4.0-cp35-cp35m-linux_x86_64.whl --user
-	#pip3 install torchvision --user
-	mkdir -p $@
+	LD_LIBRARY_PATH=$$LD_LIBRARY_PATH:$(CUDA_DIR) pip3 install http://download.pytorch.org/whl/cu91/torch-0.4.0-cp35-cp35m-linux_x86_64.whl --user
+	git -C $@ pull || git clone $(GIT_FAIRSEQ) $@
+	cd $@ && LD_LIBRARY_PATH=$$LD_LIBRARY_PATH:$(CUDA_DIR) pip3 install -r requirements.txt --user
+	cd $@ && python3 setup.py build
+	cd $@ && python3 setup.py develop --user
 
 #####################################################################
 
@@ -60,8 +63,9 @@ data:
 test:
 	tools/marian/build/marian -h 2>/dev/null || echo "Failure"
 	tools/amun/build/amun -h 2>/dev/null || echo "Failure"
-	tools/nematus/nematus/nmt.py -h 2>/dev/null || echo "Failure"
-	cd tools/sockeye && python3 -m sockeye.train -h >/dev/null || echo "Failure"
+	tools/nematus/nematus/nmt.py -h >/dev/null || echo "Failure"
+	python3 -m sockeye.train -h >/dev/null || echo "Failure"
+	python3 tools/fairseq/train.py -h >/dev/null || echo "Failure"
 
 
 #####################################################################
