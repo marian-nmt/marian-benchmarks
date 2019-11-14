@@ -1,0 +1,11 @@
+*~
+*.swo
+*.swp
+
+*.pyc
+__pycache__
+
+venv
+*.spm
+*.de
+*.en
