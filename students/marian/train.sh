@@ -10,6 +10,7 @@ $MARIAN/marian \
     --model model/model.npz \
     --type transformer --enc-depth 6 --dec-depth 1 --enc-cell gru --dec-cell gru --dim-emb 256 \
     --transformer-dim-ffn 1536 --transformer-ffn-activation relu --transformer-ffn-depth 2 --transformer-heads 8 \
+    --transformer-preprocess --transformer-postprocess dan \
     --train-sets $DATA/train.4.{en,de}.gz -T tmp --shuffle-in-ram \
     --vocabs $DATA/vocab.{ende,ende}.spm --tied-embeddings-all \
     --max-length 200 \

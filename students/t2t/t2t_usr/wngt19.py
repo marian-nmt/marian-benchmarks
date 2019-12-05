@@ -53,6 +53,8 @@ def transformer_wngt19_tiny1():
     hp.hidden_size = 256
     hp.filter_size = 1536
     hp.shared_embedding_and_softmax_weights = True
+    hp.layer_preprocess_sequence = ""
+    hp.layer_postprocess_sequence = "dan"
     # Turn off dropout
     hp.layer_prepostprocess_dropout = 0.0
     hp.attention_dropout = 0.0
