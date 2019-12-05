@@ -1,4 +1,7 @@
-#!/bin/bash -v
+#!/bin/bash
+
+set -e
+source ./venv/bin/activate
 
 DATA=../data
 
