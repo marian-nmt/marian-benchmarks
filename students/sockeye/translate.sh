@@ -14,4 +14,4 @@ cat $DATA/$prefix.spm.en | sockeye-translate --device-ids $GPUS --models model -
 # --use-cpu
 
 cat $prefix.out.spm | $MARIAN/spm_decode --model $DATA/vocab.ende.spm > $prefix.out
-sacrebleu $DATA/$prefix.de < $prefix.out | tee $prefix.out.bleu
+sacrebleu --force $DATA/$prefix.de < $prefix.out | tee $prefix.out.bleu
