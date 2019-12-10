@@ -1,0 +1,18 @@
+model_dir: wngt_ende_transformer
+
+data:
+  train_features_file: ../data/train.spm.en
+  train_labels_file:   ../data/train.spm.de
+  eval_features_file:  ../data/valid.spm.en
+  eval_labels_file:    ../data/valid.spm.de
+  source_vocabulary:   vocab.ende.onmt
+  target_vocabulary:   vocab.ende.onmt
+
+train:
+  save_checkpoints_steps: 5000
+
+eval:
+  external_evaluators: BLEU
+
+infer:
+  batch_size: 32
