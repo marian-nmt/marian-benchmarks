@@ -17,4 +17,4 @@ CUDA_TOOLKIT_ROOT_DIR=/usr/local/cuda-10.0 CUDA_VISIBLE_DEVICES=$GPUS \
         > $prefix.out.sys
 
 cat $prefix.out.sys | grep ^H | cut -f3 > $prefix.out
-sacrebleu $DATA/$prefix.de < $prefix.out | tee $prefix.out.bleu
+sacrebleu --force $DATA/$prefix.de < $prefix.out | tee $prefix.out.bleu
