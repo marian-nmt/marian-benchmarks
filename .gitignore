@@ -26,3 +26,12 @@ models/wmt17_systems/en-de
 models/wmt17_systems/scripts
 models/wmt17_systems/vars
 
+benchmarks/translation_wngt20/data
+benchmarks/translation_wngt20/model
+benchmarks/translation_wngt20/benchmark_intgemm8_cpu
+benchmarks/translation_wngt20/benchmark_fbgemm16_cpu
+benchmarks/translation_wngt20/benchmark_fbgemm8avx2_cpu
+benchmarks/translation_wngt20/benchmark_fbgemm8axv512_cpu
+benchmarks/translation_wngt20/benchmark_fp32_cpu
+benchmarks/translation_wngt20/benchmark_fp32_gpu
+benchmarks/translation_wngt20/benchmark_intgemm16_cpu
